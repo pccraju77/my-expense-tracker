@@ -162,9 +162,13 @@ const updateUI = () => {
 };
 
 const getFilteredTransactions = () => {
-    const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+    const searchTerm = (searchInput ? searchInput.value : "").toLowerCase();
     return transactions.filter(t => {
-        const matchesSearch = t.description.toLowerCase().includes(searchTerm) || t.category.toLowerCase().includes(searchTerm);
+        if (!t) return false;
+        const desc = (t.description || "").toLowerCase();
+        const cat = (t.category || "").toLowerCase();
+
+        const matchesSearch = desc.includes(searchTerm) || cat.includes(searchTerm);
         const matchesType = currentFilterType === 'all' || t.type === currentFilterType;
         const matchesCategory = currentFilterCategory === 'all' || t.category === currentFilterCategory;
         return matchesSearch && matchesType && matchesCategory;

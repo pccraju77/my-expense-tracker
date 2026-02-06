@@ -4,7 +4,11 @@ const storage = {
         try {
             const data = localStorage.getItem('transactions');
             if (data && data !== "null" && data !== "undefined") {
-                return JSON.parse(data);
+                const parsed = JSON.parse(data);
+                if (Array.isArray(parsed)) {
+                    // Filter out corrupted data entries
+                    return parsed.filter(t => t && typeof t.description === 'string' && typeof t.category === 'string');
+                }
             }
         } catch (e) {
             console.error("Storage Error: Failed to parse transactions", e);

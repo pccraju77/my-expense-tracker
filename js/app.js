@@ -13,6 +13,7 @@ const clearFiltersBtn = getEl('clear-filters');
 const emptyState = getEl('empty-state');
 const categoryPillsContainer = getEl('category-pills-container');
 const paginationContainer = getEl('pagination-container');
+const exportBtn = getEl('export-btn');
 
 // Modal Elements
 const editModal = getEl('edit-modal');
@@ -332,6 +333,17 @@ if (transactionForm) {
         currentPage = 1;
         updateUI();
     });
+}
+
+if (exportBtn) {
+    exportBtn.onclick = () => {
+        if (transactions.length === 0) return alert('No data to export');
+        const dataStr = JSON.stringify(transactions, null, 2);
+        const link = document.createElement('a');
+        link.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr));
+        link.setAttribute('download', 'spendwise-export.json');
+        link.click();
+    };
 }
 
 // Kickoff

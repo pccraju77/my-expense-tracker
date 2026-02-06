@@ -33,7 +33,7 @@ const itemsPerPage = 4;
 const init = () => {
     transactions = storage.getTransactions() || [];
     updateUI();
-    setupTheme();
+    setupThemeUI(); // Check initial icon states
     setupModalListeners();
     setupFilterListeners();
 };
@@ -138,17 +138,16 @@ const setupModalListeners = () => {
     }
 };
 
-const setupTheme = () => {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if (savedTheme === 'dark') document.documentElement.classList.add('dark');
-
+const setupThemeUI = () => {
+    // Buttons and theme are partially handled by head script for logic
+    // This part handles the event listener for the toggle
     if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
+        themeToggle.onclick = () => {
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            if (typeof updateChart === 'function') updateChart(transactions);
-        });
+            if (window.updateChart) window.updateChart(transactions);
+        };
     }
 };
 
@@ -157,7 +156,7 @@ const updateUI = () => {
     displayTransactions(filtered);
     renderPagination(filtered.length);
     updateSummary();
-    if (typeof updateChart === 'function') updateChart(transactions);
+    if (window.updateChart) window.updateChart(transactions);
     renderCategoryPills();
 };
 
@@ -337,7 +336,6 @@ if (transactionForm) {
 
 // Kickoff
 document.addEventListener('DOMContentLoaded', init);
-// Also try to init immediately if DOM is already ready
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     init();
 }

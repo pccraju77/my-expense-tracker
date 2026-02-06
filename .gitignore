@@ -1,0 +1,13 @@
+# IDE
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Local storage backups or other potential clutter
+*.json
+!index.html
+!package.json
+!spendwise-export.json

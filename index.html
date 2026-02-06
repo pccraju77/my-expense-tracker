@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpendWise | Modern Expense Analytics</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#8b5cf6',
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-all duration-500">
+    <!-- Animated Mesh Background -->
+    <div class="mesh-gradient-bg"></div>
+
+    <!-- Navigation -->
+    <nav
+        class="sticky top-0 z-[60] py-3 sm:py-4 bg-white/40 dark:bg-slate-950/40 backdrop-blur-xl border-b border-white/20 dark:border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-10 lg:px-12 flex justify-between items-center">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <div
+                    class="bg-gradient-to-tr from-primary to-secondary p-2 rounded-xl sm:rounded-2xl shadow-lg shadow-primary/20">
+                    <i class="fas fa-coins text-white text-lg sm:text-xl"></i>
+                </div>
+                <h1
+                    class="text-xl sm:text-2xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-primary to-pink-500 tracking-tight">
+                    SpendWise</h1>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-6">
+                <!-- Theme Toggle -->
+                <button id="theme-toggle"
+                    class="p-2 sm:p-3 rounded-xl sm:rounded-2xl premium-glass hover:bg-white/60 dark:hover:bg-slate-900/60 transition-all duration-300">
+                    <i class="fas fa-moon dark:hidden text-primary"></i>
+                    <i class="fas fa-sun hidden dark:block text-amber-400"></i>
+                </button>
+
+                <button id="export-btn"
+                    class="flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 premium-glass text-xs sm:text-sm font-semibold hover:scale-105 active:scale-95">
+                    <i class="fas fa-file-export text-primary"></i> <span class="hidden sm:inline">Export</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-10 lg:px-12 py-6 sm:py-10">
+        <!-- Dashboard Header Stats -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mb-8 sm:mb-12">
+            <!-- Balance Card -->
+            <div
+                class="premium-glass p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] flex flex-col justify-between reveal">
+                <div class="flex justify-between items-start mb-4 sm:mb-6">
+                    <div>
+                        <span
+                            class="text-slate-500 dark:text-slate-400 font-medium text-[10px] sm:text-xs tracking-widest uppercase">Available
+                            Balance</span>
+                        <p id="total-balance"
+                            class="text-3xl sm:text-4xl font-bold font-display mt-1 sm:mt-2 tracking-tighter">₹0.00</p>
+                    </div>
+                    <div class="p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-blue-500/10 text-blue-500 text-lg sm:text-2xl">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 text-xs">
+                    <div
+                        class="flex items-center gap-1 text-emerald-500 font-bold px-2 py-1 bg-emerald-500/10 rounded-full">
+                        <i class="fas fa-trending-up"></i> 2.4%
+                    </div>
+                    <span class="text-slate-400">Since last period</span>
+                </div>
+            </div>
+
+            <!-- Income Card -->
+            <div class="premium-glass p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] reveal delay-100">
+                <div class="flex justify-between items-start mb-4 sm:mb-6">
+                    <div>
+                        <span
+                            class="text-emerald-500 font-medium text-[10px] sm:text-xs tracking-widest uppercase">Total
+                            Income</span>
+                        <p id="total-income"
+                            class="text-3xl sm:text-4xl font-bold font-display mt-1 sm:mt-2 text-emerald-500 tracking-tighter">
+                            ₹0.00</p>
+                    </div>
+                    <div
+                        class="p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-emerald-500/10 text-emerald-500 text-lg sm:text-2xl">
+                        <i class="fas fa-arrow-down-long"></i>
+                    </div>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-400">Cumulative for current month</p>
+            </div>
+
+            <!-- Expense Card -->
+            <div class="premium-glass p-6 sm:p-8 rounded-[1.5rem] sm:rounded-[2rem] reveal delay-200">
+                <div class="flex justify-between items-start mb-4 sm:mb-6">
+                    <div>
+                        <span class="text-rose-500 font-medium text-[10px] sm:text-xs tracking-widest uppercase">Total
+                            Expenses</span>
+                        <p id="total-expense"
+                            class="text-3xl sm:text-4xl font-bold font-display mt-1 sm:mt-2 text-rose-500 tracking-tighter">
+                            ₹0.00</p>
+                    </div>
+                    <div class="p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-rose-500/10 text-rose-500 text-lg sm:text-2xl">
+                        <i class="fas fa-arrow-up-long"></i>
+                    </div>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-400 font-medium">Monthly limit: <span
+                        class="text-rose-400">₹50,000</span></p>
+            </div>
+        </div>
+
+        <!-- Analytics Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <!-- Categorical Insights -->
+            <div class="premium-glass p-8 rounded-[2rem] reveal delay-300">
+                <h2 class="text-xl font-bold mb-8 flex items-center gap-3 font-display">
+                    <i class="fas fa-chart-pie text-primary"></i> Categorical Breakdown
+                </h2>
+                <div class="relative h-64">
+                    <canvas id="category-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Flow Trends -->
+            <div class="premium-glass p-8 rounded-[2rem] reveal delay-400">
+                <h2 class="text-xl font-bold mb-8 flex items-center gap-3 font-display">
+                    <i class="fas fa-chart-column text-primary"></i> Cashflow Trends
+                </h2>
+                <div class="relative h-64">
+                    <canvas id="trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-10">
+            <!-- Left Column: Add Transaction Form -->
+            <div class="xl:col-span-4 space-y-10">
+                <div class="premium-glass p-8 rounded-[2rem] reveal">
+                    <h2 class="text-2xl font-bold mb-8 flex items-center gap-3 font-display">
+                        <span
+                            class="w-10 h-10 flex items-center justify-center bg-primary rounded-xl text-white shadow-lg shadow-primary/30">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                        New Entry
+                    </h2>
+                    <form id="transaction-form" class="space-y-6">
+                        <div class="space-y-2">
+                            <label
+                                class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Detail</label>
+                            <input type="text" id="description" required placeholder="What was this for?"
+                                class="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-4 focus:ring-primary/10 transition-all">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <label
+                                    class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Amount</label>
+                                <input type="number" id="amount" required step="0.01" placeholder="0.00"
+                                    class="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-4 focus:ring-primary/10 transition-all">
+                            </div>
+                            <div class="space-y-2">
+                                <label
+                                    class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Type</label>
+                                <select id="type"
+                                    class="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-4 focus:ring-primary/10 transition-all appearance-none cursor-pointer">
+                                    <option value="expense">Expense</option>
+                                    <option value="income">Income</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label
+                                class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Category</label>
+                            <select id="category"
+                                class="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-4 focus:ring-primary/10 transition-all appearance-none cursor-pointer">
+                                <option value="Food">🍱 Food & Dining</option>
+                                <option value="Transport">🚗 Transportation</option>
+                                <option value="Shopping">🛍️ Shopping</option>
+                                <option value="Entertainment">🎬 Entertainment</option>
+                                <option value="Health">💊 Health & Fitness</option>
+                                <option value="Bills">🧾 Bills & Utilities</option>
+                                <option value="Salary">💰 Salary / Income</option>
+                                <option value="Other">✨ Other</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Date</label>
+                            <input type="date" id="date" required
+                                class="w-full px-5 py-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 outline-none focus:ring-4 focus:ring-primary/10 transition-all">
+                        </div>
+
+                        <button type="submit"
+                            class="w-full py-5 bg-gradient-to-br from-primary to-indigo-600 hover:from-primary-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-primary/20 transition-all active:scale-95 group">
+                            Create Transaction <i
+                                class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Activity Feed -->
+            <div class="xl:col-span-8 space-y-8">
+                <!-- Filters Section -->
+                <div class="premium-glass p-5 sm:p-6 rounded-[2rem] space-y-6 reveal delay-300">
+                    <div class="flex flex-col md:flex-row gap-4 items-center">
+                        <div class="w-full md:flex-1 relative">
+                            <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="search-input" placeholder="Search transactions..."
+                                class="w-full pl-12 pr-6 py-4 rounded-2xl bg-slate-100/30 dark:bg-slate-900/40 border-none outline-none focus:ring-4 focus:ring-primary/10 transition-all font-medium text-sm">
+                        </div>
+
+                        <div
+                            class="flex items-center gap-2 p-1.5 bg-slate-100/50 dark:bg-slate-900/50 rounded-[1.25rem] w-full md:w-auto overflow-x-auto no-scrollbar">
+                            <button data-filter-type="all"
+                                class="filter-pill active whitespace-nowrap px-6 py-2.5 rounded-xl text-xs font-bold transition-all">All
+                                Flow</button>
+                            <button data-filter-type="income"
+                                class="filter-pill whitespace-nowrap px-6 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50">Inflow</button>
+                            <button data-filter-type="expense"
+                                class="filter-pill whitespace-nowrap px-6 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 hover:bg-white/50 dark:hover:bg-slate-800/50">Outflow</button>
+                        </div>
+
+                        <button id="clear-filters"
+                            class="hidden md:flex items-center justify-center w-12 h-12 rounded-2xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all"
+                            title="Reset Filters">
+                            <i class="fas fa-rotate-left"></i>
+                        </button>
+                    </div>
+
+                    <!-- Category Quick Filter -->
+                    <div id="category-pills-container"
+                        class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar -mx-1 px-1">
+                        <button data-category="all"
+                            class="category-pill active shrink-0 px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider transition-all">All
+                            Categories</button>
+                        <!-- Dynamic categories will slide in here -->
+                    </div>
+                </div>
+
+                <!-- Feed Container -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-2 mb-2">
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-500">Transaction Feed</h3>
+                        <span
+                            class="text-xs text-slate-400 px-3 py-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-full">Real-time
+                            update</span>
+                    </div>
+
+                    <div id="transaction-list-container" class="space-y-4">
+                        <!-- Entries will breathe life here -->
+                        <div class="flex flex-col items-center justify-center py-32 text-slate-400 premium-glass rounded-[2rem]"
+                            id="empty-state">
+                            <div
+                                class="w-24 h-24 flex items-center justify-center bg-slate-100 dark:bg-slate-900 rounded-full mb-6">
+                                <i class="fas fa-ghost text-4xl opacity-40"></i>
+                            </div>
+                            <p class="text-lg font-medium">It's quiet in here...</p>
+                            <p class="text-sm mt-1">Ready to track your first expense?</p>
+                        </div>
+                    </div>
+
+                    <!-- Pagination Controls -->
+                    <div id="pagination-container" class="flex items-center justify-between pb-4 px-2">
+                        <!-- Navigation will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>
+
+    <!-- Edit Popup Modal -->
+    <div id="edit-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md" id="modal-backdrop"></div>
+        <div
+            class="relative w-full max-w-lg premium-glass rounded-[2.5rem] border border-white/20 shadow-2xl p-10 animate-fade-in scale-up">
+            <div class="flex items-center justify-between mb-10">
+                <h2 class="text-2xl font-bold flex items-center gap-3 font-display">
+                    <span class="w-10 h-10 flex items-center justify-center bg-primary/20 rounded-xl text-primary">
+                        <i class="fas fa-edit"></i>
+                    </span>
+                    Modify Entry
+                </h2>
+                <button id="close-modal"
+                    class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <i class="fas fa-times text-slate-400 text-xl"></i>
+                </button>
+            </div>
+
+            <form id="edit-transaction-form" class="space-y-8">
+                <!-- Matching the new layout style -->
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Update Detail</label>
+                    <input type="text" id="edit-description" required
+                        class="w-full px-5 py-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border-none outline-none focus:ring-4 focus:ring-primary/10">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">New
+                            Amount</label>
+                        <input type="number" id="edit-amount" required step="0.01"
+                            class="w-full px-5 py-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border-none outline-none focus:ring-4 focus:ring-primary/10">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Adjust
+                            Flow</label>
+                        <select id="edit-type"
+                            class="w-full px-5 py-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border-none outline-none focus:ring-4 focus:ring-primary/10">
+                            <option value="expense">Expense (-)</option>
+                            <option value="income">Income (+)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">Change
+                            Sector</label>
+                        <select id="edit-category"
+                            class="w-full px-5 py-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border-none outline-none focus:ring-4 focus:ring-primary/10">
+                            <option value="Food">🍔 Food & Dining</option>
+                            <option value="Transport">🚗 Transportation</option>
+                            <option value="Shopping">🛍️ Shopping</option>
+                            <option value="Entertainment">🎬 Entertainment</option>
+                            <option value="Health">💊 Health & Fitness</option>
+                            <option value="Bills">🧾 Bills & Utilities</option>
+                            <option value="Salary">💰 Salary / Income</option>
+                            <option value="Other">✨ Other</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">New
+                            Timeline</label>
+                        <input type="date" id="edit-date" required
+                            class="w-full px-5 py-4 rounded-2xl bg-slate-100/50 dark:bg-slate-900/50 border-none outline-none focus:ring-4 focus:ring-primary/10">
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-6">
+                    <button type="button" id="cancel-modal"
+                        class="flex-1 py-5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-2xl hover:bg-slate-200 transition-colors">Abort</button>
+                    <button type="submit"
+                        class="flex-1 py-5 bg-gradient-to-r from-primary to-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">Submit
+                        Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Initialization Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
